@@ -207,13 +207,11 @@ public class GameplayController {
         float x = ship.getX();
         float y = ship.getY();
 
-        boolean isPower = board.isPowerTileAtScreen(x,y);
-        float angPlus = isPower ? POWER_ANGLE : NORMAL_ANGLE;
-        for (float fireAngle = 0.0f; fireAngle < 360.0f; fireAngle += angPlus) {
+        for (float fireAngle = 0.0f; fireAngle < 360.0f; fireAngle += NORMAL_ANGLE) {
             float vx = (float) Math.cos(fireAngle * Math.PI / HALF_CIRCLE);
             float vy = (float) Math.sin(fireAngle * Math.PI / HALF_CIRCLE);
 
-            photons.allocate(ship.getId(), x, y, vx, vy, isPower);
+            photons.allocate(ship.getId(), x, y, vx, vy, false);
         }
 
         // We use a manager to ensure only one sound per ship
