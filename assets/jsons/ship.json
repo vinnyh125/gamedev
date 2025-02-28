@@ -1,0 +1,15 @@
+{
+    "num enemies" : 5,
+    "num companions" : 5,
+    "diameter" : 30.0,
+    "speed" : [6.5, 15.0],
+    "drift" : [1.0, 0.5],
+    "damping" : 0.75,
+    "cooldown" : 60,
+    "fall rate" : 0.5,
+    "fall range" : [1.0, 200.0],
+    "fall offset" : -16.0,
+    "fall skew" : [0.04, 0.0, 0.03],
+    "random factor" : 0.015625,
+    "epsilon" : 0.01
+}

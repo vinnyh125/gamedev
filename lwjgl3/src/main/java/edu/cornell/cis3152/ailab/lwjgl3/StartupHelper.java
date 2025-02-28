@@ -14,7 +14,7 @@
  */
 //Note, the above license and copyright applies to this file only.
 
-package edu.cornell.cis3152.team8.lwjgl3;
+package edu.cornell.cis3152.ailab.lwjgl3;
 
 import org.lwjgl.system.macosx.LibC;
 

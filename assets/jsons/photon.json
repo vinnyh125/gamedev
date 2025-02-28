@@ -1,0 +1,11 @@
+{
+    "capacity" : 1024,
+    "speed" : 10,
+    "lifespan" : 32,
+    "diameter" : 12.0,
+    "offset" : -15.0,
+    "decay" : 8.0,
+    "alpha" : [0.22, 0.78],
+    "basic color" : "#00ffffff",
+    "power color" : "#ff0000ff"
+}

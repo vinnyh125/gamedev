@@ -1,0 +1,11 @@
+{
+    "size" : [40,40],
+    "tile size" : 64.0,
+    "tile depth" : 3.0,
+    "tile space" : 12.0,
+    "power interval" : 4,
+    "fall range" : [1.0, 200.0],
+    "fall rate"  : 0.5,
+    "basic color" : "#40404080",
+    "power color" : "#00ffff80"
+}

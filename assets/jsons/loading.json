@@ -1,0 +1,11 @@
+{
+	"textures": {
+	    "stars" : "images/stars.jpg"
+    },
+    "fonts" : {
+        "amyn" : {
+            "file" : "fonts/Amyn.ttf",
+            "size" : 70
+        }
+    }
+}

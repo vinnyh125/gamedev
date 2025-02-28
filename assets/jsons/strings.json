@@ -1,0 +1,7 @@
+{
+    "load"  : "Loading...",
+    "start" : "Press any Key\nTo Begin",
+    "lost" :  "Game Over",
+    "won"  :  "You Won!",
+    "restart" : "Press \"R\" to Restart"
+}

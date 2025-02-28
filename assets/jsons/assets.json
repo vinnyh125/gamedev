@@ -1,0 +1,38 @@
+{
+	"textures": {
+	    "fire"   : "models/Fire.png",
+        "photon" : "models/Photon.png",
+        "tile"   : "models/Tile.png",
+        "ship1"  : "models/Ship-Player.png",
+        "ship2"  : "models/Ship-Enemy.png"
+    },
+    "mtls" : {
+        "fire" : {
+            "file" : "models/Fire.mtl",
+            "Fire.png" : "fire"
+        }
+    },
+    "objs" : {
+        "fire" : {
+            "file": "models/Fire.obj",
+            "mtllib": {
+                "Fire.mtl" : "fire"
+            }
+        },
+        "photon" : "models/Photon.obj",
+        "ship" : "models/Ship.obj",
+        "tile" : "models/Tile.obj"
+    },
+    "jsons" : {
+        "board" : "jsons/board.json",
+        "ship"  : "jsons/ship.json",
+        "photon" : "jsons/photon.json"
+        "strings" : "jsons/strings.json"
+    }
+    "soundfx" : {
+        "bump" : "sounds/Bump.wav",
+        "fall" : "sounds/Fall.wav",
+        "fire" : "sounds/Fire.wav",
+        "over" : "sounds/GameOver.wav"
+    }
+}
