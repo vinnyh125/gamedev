@@ -224,7 +224,7 @@ public class ShipList implements Iterable<Ship> {
 
         // Draw the ships
         for (Ship s : this) {
-            ModelRef model = (s.getId() == 0 ? playerModel : enemyModel);
+            ModelRef model = (s.getShipType() == Ship.SHIPTYPE.ENEMY ? enemyModel : playerModel);
 
             // Rotate the ship into position
             float size = s.getSize();
