@@ -92,6 +92,9 @@ public class Ship {
 	/** The number of frames until we can fire again */
 	private int fireCool;
 
+    /** The number of coins the player has collected */
+    private int coins;
+
     /** The current 3d rotation of this ship */
     private Quaternion rotation;
     /** A temporary quaternion for computation */
@@ -152,6 +155,8 @@ public class Ship {
 		isAlive = true;
 		fallAmount = 0;
 		fireCool = 0;
+
+        coins = 0;
 
 		rotation = new Quaternion();
 		tempQuat = new Quaternion();
@@ -396,6 +401,32 @@ public class Ship {
         return rotation;
 	}
 
+    /**
+     * Returns the number of coins the ship has collected
+     *
+     * @return the number of coins the ship has collected
+     */
+    public int getCoins() {
+        return coins;
+    }
+
+    /**
+     * Sets the number of coins the ship has collected
+     *
+     * @param value the number of coins the ship has collected
+     */
+    public void setCoins(int value) {
+        coins = value;
+    }
+
+    /**
+     * Returns the cost of this ship
+     *
+     */
+    public int getCost() {
+        return 5;
+    }
+
 	/**
 	 * Updates this ship position (and weapons fire) according to the control code.
 	 *
@@ -451,6 +482,11 @@ public class Ship {
 				velocity.y = 0.0f;
 			}
 		}
+
+        if (getShipType() == SHIPTYPE.ENEMY) {
+            velocity.x /= 1.5;
+            velocity.y /= 1.5;
+        }
 
 		updateRotation();
 	}
