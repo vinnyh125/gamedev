@@ -73,6 +73,7 @@ public class CollisionController {
     public void update() {
         ShipList ships = session.getShips();
         PhotonPool photons = session.getPhotons();
+        Ship player = ships.getPlayer();
 
         // Move live ships when possible.
         for (Ship s : ships) {
@@ -81,12 +82,14 @@ public class CollisionController {
             }
         }
 
-        // Test collisions between ships.
+        // Test collisions between player and ships.
         int length = ships.size();
-        for (int ii = 0; ii < length - 1; ii++) {
-            for (int jj = ii + 1; jj < length; jj++) {
-                checkForCollision(ships.get(ii), ships.get(jj));
-            }
+//        for (int ii = 0; ii < length - 1; ii++) {
+//            for (int jj = ii + 1; jj < length; jj++) {
+//                checkForCollision(ships.get(ii), ships.get(jj));
+//            }
+            for (int i = 1; i < length - 1; i++) {
+                checkForCollision(player, ships.get(i));
         }
 
         // Test collisions between ships and photons.
@@ -94,7 +97,7 @@ public class CollisionController {
             // skip if the ship is not an enemy
             if (s.getShipType() == Ship.SHIPTYPE.ENEMY) {
                 for (Photon p : photons) {
-                    checkForCollision(s, p);
+                    checkForCollision(player, s, p);
                 }
             }
         }
@@ -144,54 +147,38 @@ public class CollisionController {
 
 
     /**
-     * Processes collisions between ships, causing them to bounce off one another.
+     * Processes collisions between ships, causing them to either kill player (enemy and player) or add companion
+     * (player and companion).
      *
-     * This method updates the velocities of both ships: the collider and the
-     * collidee. Therefore, you should only call this method for one of the
-     * ships, not both. Otherwise, you are processing the same collisions
-     * twice.
      *
-     * @param ship1 The collider
-     * @param ship2 The collidee
+     * @param player The player
+     * @param ship The ship
      */
-    private void checkForCollision(Ship ship1, Ship ship2) {
+    private void checkForCollision(Ship player, Ship ship) {
         Board board = session.getBoard();
 
         // Do nothing if either ship is off the board.
-        if (!ship1.isActive() || !ship2.isActive()) {
+        if (!player.isActive() || !ship.isActive()) {
             return;
         }
 
         // Get the tiles for each ship
-        int s1x = board.screenToBoard(ship1.getX());
-        int s1y = board.screenToBoard(ship1.getY());
-        int s2x = board.screenToBoard(ship2.getX());
-        int s2y = board.screenToBoard(ship2.getY());
+        int s1x = board.screenToBoard(player.getX());
+        int s1y = board.screenToBoard(player.getY());
+        int s2x = board.screenToBoard(ship.getX());
+        int s2y = board.screenToBoard(ship.getY());
 
         // If the two ships occupy the same tile,
         if (s1x == s2x && s1y == s2y) {
-            // If they have the same (continuous) location, then nudge them.
-            if (ship1.getX() == ship2.getX() && ship1.getY() == ship2.getY()) {
-                safeNudge(ship1);
-                safeNudge(ship2);
+            // If the ship is an enemy, kill the player
+            if (ship.getShipType() == Ship.SHIPTYPE.ENEMY) {
+                player.setAlive(false);
             }
-
-            // If this ship is farther from the tile center than the other one,
-            if (manhattan(ship1.getX(), ship1.getX(), board.boardToScreen(s1x), board.boardToScreen(s1y))
-                > manhattan(ship2.getX(), ship2.getX(), board.boardToScreen(s2x), board.boardToScreen(s2y))
-                && board.isSafeAtScreen(ship1.getX() + (ship1.getX() - ship2.getX()),
-                                        ship1.getY() + (ship1.getY() - ship2.getY()))) {
-                // Then push it away.
-                ship1.getPosition().add(ship1.getX() - ship2.getX(), ship1.getY() - ship2.getY());
-            } else if (board.isSafeAtScreen(ship2.getX() + (ship2.getX() - ship1.getX()),
-                                            ship2.getY() + (ship2.getY() - ship1.getY()))) {
-                // Otherwise, push the other ship away
-                ship2.getPosition().add(ship2.getX() - ship1.getX(), ship2.getY() - ship1.getY());
-            } else {
-                // Neither ship can be pushed away in an appropriate
-                // direction, so nudge them.
-                safeNudge(ship1);
-                safeNudge(ship2);
+            // If the ship is a companion and has enough coins, add the companion to the chain
+            else if (ship.getShipType() == Ship.SHIPTYPE.COMPANION && player.getCoins() >= ship.getCost()) {
+//                player.addCompanion(ship);
+                ship.setAlive(false);
+                player.setCoins(player.getCoins() - ship.getCost());
             }
         }
     }
@@ -199,41 +186,41 @@ public class CollisionController {
     /**
      * Processes collisions between a ship and a photon
      *
-     * Recall that when a photon collides with a ship, the tile at that position
-     * is destroyed.
+     * Recall that when a photon collides with a ship, the ship is destroyed.
      *
-     * @param ship   The ship
+     * @param player   The player
+     * @param enemy   The enemy
      * @param photon The photon
      */
-    private void checkForCollision(Ship ship, Photon photon) {
+    private void checkForCollision(Ship player, Ship enemy, Photon photon) {
         Board board = session.getBoard();
         PhotonPool photons = session.getPhotons();
 
         // Do nothing if ship is off the board.
-        if (!ship.isActive()) {
+        if (!enemy.isActive()) {
             return;
-        } else if (ship.getId() == photon.getSource()) {
+        } else if (enemy.getId() == photon.getSource()) {
             // Our own photon; do nothing.
             return;
         }
 
         // Get the tiles for ship and photon
-        int sx = board.screenToBoard(ship.getX());
-        int sy = board.screenToBoard(ship.getY());
+        int sx = board.screenToBoard(enemy.getX());
+        int sy = board.screenToBoard(enemy.getY());
         int px = board.screenToBoard(photon.getX());
         int py = board.screenToBoard(photon.getY());
 
         // If the ship and photon occupy the same tile,
         if (sx == px && sy == py) {
-            // Have the photon push the ship.
+            // Have the minion "die" and respawn a new one (just change its position to random corner of board)
             board.destroyTileAt(sx, sy);
-            float x = photon.getPushX() * (board.getTileSize() + board.getTileSpacing());
-            float y = photon.getPushY() * (board.getTileSize() + board.getTileSpacing());
-            ship.getPosition().add(x,y);
+            enemy.setX(Math.random() > 0.5 ? 0 : board.boardToScreen(board.getWidth()-1));
+            enemy.setY(Math.random() > 0.5 ? 0 : board.boardToScreen(board.getHeight()-1));
 
+            player.setCoins(player.getCoins() + 1);
             photons.destroy(photon);
 
-            // We use a manager to esure only one sound at a time
+            // We use a manager to ensure only one sound at a time
             // Otherwise, the game gets LOUD
             SoundEffectManager sounds = SoundEffectManager.getInstance();
             SoundEffect fire = session.getSound( "bump" );
