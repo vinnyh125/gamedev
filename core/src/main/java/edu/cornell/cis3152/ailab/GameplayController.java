@@ -41,8 +41,11 @@ public class GameplayController {
 
     /** Reference to the game session */
     private GameSession session;
+    /** Ships in the chain */
+    private Player player;
 
     /** List of all the input (both player and AI) controllers */
+    protected InputController playerControls;
     protected InputController[] controls;
     /** The current player action */
     protected int playerAction;
@@ -67,12 +70,13 @@ public class GameplayController {
 
         initShipPositions();
         ShipList ships = session.getShips();
+        player = session.getPlayer();
+        player.addCompanion(ships.get(0));
+        playerControls = new PlayerController();
+
         controls = new InputController[ships.size()];
-        controls[0] = new PlayerController();
-        for(int ii = 1; ii < ships.size(); ii++) {
-            if (ships.get(ii).getShipType() == Ship.SHIPTYPE.COMPANION) {
-                controls[ii] = new CompanionController(ii, session);
-            } else {
+        for(int ii = 0; ii < ships.size(); ii++) {
+            if (ships.get(ii).getShipType() == Ship.SHIPTYPE.ENEMY) {
                 controls[ii] = new AIController(ii, session);
             }
         }
@@ -124,7 +128,7 @@ public class GameplayController {
     }
 
     public int getPlayerSelection() {
-        return controls[0].getSelection();
+        return playerControls.getSelection();
     }
 
     /**
@@ -144,19 +148,26 @@ public class GameplayController {
             s.adjustForDrift(x,y);
             checkForDeath(s);
 
-            if (!s.isFalling() && controls[s.getId()] != null) {
-                int action = controls[s.getId()].getAction();
-                s.update(action);
-                if (s.canFire() && s.getShipType() == Ship.SHIPTYPE.PLAYER) {
+            if (s.getShipType() == Ship.SHIPTYPE.ENEMY) {
+                // move enemies
+                if (!s.isFalling() && controls[s.getId()] != null) {
+                    int action = controls[s.getId()].getAction();
+                    s.update(action);
+                } else {
+                    s.update(InputController.CONTROL_NO_ACTION);
+                }
+            }
+            else if (s.getShipType() == Ship.SHIPTYPE.PLAYER) {
+                if (s.canFire() && s.isActive()) {
                     fireWeapon(s);
                 } else {
                     s.coolDown(true);
                 }
-
-            } else {
-                s.update(InputController.CONTROL_NO_ACTION);
             }
         }
+
+        // Move the player chain
+        player.update(playerControls.getAction());
 
         session.getBoard().update();
         session.getPhotons().update();

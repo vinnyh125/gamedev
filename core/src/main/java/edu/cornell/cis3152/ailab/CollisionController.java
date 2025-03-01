@@ -73,7 +73,6 @@ public class CollisionController {
     public void update() {
         ShipList ships = session.getShips();
         PhotonPool photons = session.getPhotons();
-        Ship player = ships.getPlayer();
 
         // Move live ships when possible.
         for (Ship s : ships) {
@@ -82,25 +81,26 @@ public class CollisionController {
             }
         }
 
-        // Test collisions between player and ships.
-        int length = ships.size();
-//        for (int ii = 0; ii < length - 1; ii++) {
-//            for (int jj = ii + 1; jj < length; jj++) {
-//                checkForCollision(ships.get(ii), ships.get(jj));
-//            }
-            for (int i = 1; i < length - 1; i++) {
-                checkForCollision(player, ships.get(i));
-        }
 
-        // Test collisions between ships and photons.
-        for (Ship s : ships) {
-            // skip if the ship is not an enemy
-            if (s.getShipType() == Ship.SHIPTYPE.ENEMY) {
-                for (Photon p : photons) {
-                    checkForCollision(player, s, p);
-                }
-            }
-        }
+       for (Ship s1 : ships) {
+           // Test collisions between player and ships.
+           if (s1.getShipType() == Ship.SHIPTYPE.PLAYER) {
+               for (Ship s2 : ships) {
+                   if (s2.getShipType() != Ship.SHIPTYPE.PLAYER) {
+                       checkForCollision(s1, s2);
+                   }
+               }
+           }
+       }
+
+       for (Ship s1 : ships) {
+           // Test collisions between enemy and photons
+           if (s1.getShipType() == Ship.SHIPTYPE.ENEMY) {
+               for (Photon p : photons) {
+                   checkForCollision(s1, p);
+               }
+           }
+       }
     }
 
     /**
@@ -172,13 +172,12 @@ public class CollisionController {
         if (s1x == s2x && s1y == s2y) {
             // If the ship is an enemy, kill the player
             if (ship.getShipType() == Ship.SHIPTYPE.ENEMY) {
-                player.setAlive(false);
+                session.getPlayer().removeCompanion(player.getId());
             }
             // If the ship is a companion and has enough coins, add the companion to the chain
-            else if (ship.getShipType() == Ship.SHIPTYPE.COMPANION && player.getCoins() >= ship.getCost()) {
-//                player.addCompanion(ship);
-                ship.setAlive(false);
-                player.setCoins(player.getCoins() - ship.getCost());
+            else if (ship.getShipType() == Ship.SHIPTYPE.COMPANION && session.getPlayer().getCoins() >= ship.getCost()) {
+                session.getPlayer().addCompanion(ship);
+                session.getPlayer().setCoins(session.getPlayer().getCoins() - ship.getCost());
             }
         }
     }
@@ -188,11 +187,10 @@ public class CollisionController {
      *
      * Recall that when a photon collides with a ship, the ship is destroyed.
      *
-     * @param player   The player
      * @param enemy   The enemy
      * @param photon The photon
      */
-    private void checkForCollision(Ship player, Ship enemy, Photon photon) {
+    private void checkForCollision(Ship enemy, Photon photon) {
         Board board = session.getBoard();
         PhotonPool photons = session.getPhotons();
 
@@ -213,11 +211,10 @@ public class CollisionController {
         // If the ship and photon occupy the same tile,
         if (sx == px && sy == py) {
             // Have the minion "die" and respawn a new one (just change its position to random corner of board)
-            board.destroyTileAt(sx, sy);
             enemy.setX(Math.random() > 0.5 ? 0 : board.boardToScreen(board.getWidth()-1));
             enemy.setY(Math.random() > 0.5 ? 0 : board.boardToScreen(board.getHeight()-1));
 
-            player.setCoins(player.getCoins() + 1);
+            session.getPlayer().setCoins(session.getPlayer().getCoins() + 1);
             photons.destroy(photon);
 
             // We use a manager to ensure only one sound at a time

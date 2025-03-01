@@ -68,7 +68,7 @@ public class AIController implements InputController {
     public AIController(int id, GameSession session) {
         this(id);
         setSession(session);
-        target = session.getShips().getPlayer();
+        target = session.getPlayer().getPlayerHead();
     }
 
     /**

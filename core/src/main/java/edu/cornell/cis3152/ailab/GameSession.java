@@ -45,6 +45,7 @@ public class GameSession {
     private Board board;
     /** The ship objects (MODEL CLASS) */
     private ShipList ships;
+    private Player player;
     /** Collection of photons on screen. (MODEL CLASS) */
     private PhotonPool photons;
 
@@ -76,6 +77,7 @@ public class GameSession {
         board.setTile( tileModel );
 
         // SHIPS
+        player = new Player(this);
         ships = new ShipList(assets.getEntry("ship", JsonValue.class));
 
         Texture playerImage = assets.getEntry("ship1", Texture.class);
@@ -136,6 +138,10 @@ public class GameSession {
      */
     public SoundEffect getSound(String key) {
         return assets.getEntry( key, SoundEffect.class );
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
 }

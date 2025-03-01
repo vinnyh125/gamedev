@@ -111,7 +111,6 @@ public class GameScene implements Screen {
      * Restarts the game, laying out all the ships and tiles
      */
     public void resetGame() {
-
         session = new GameSession(assets);
 
         // Create the two subcontrollers
@@ -160,23 +159,23 @@ public class GameScene implements Screen {
 
         // if the player ship is dead, end the game with a Game Over:
         ShipList ships = session.getShips();
-        if (gameState == GameState.PLAY) {
-            if (!ships.getPlayer().isActive()) {
-                gameState = GameState.FINISH;
-                SoundEffect s = assets.getEntry("over", SoundEffect.class);
-
-                /** Manager used to cut down on the audio conflicts */
-                SoundEffectManager sounds = SoundEffectManager.getInstance();
-                sounds.play("over", s);
-
-            } else if (ships.numActive() <= 1) {
-                gameState = GameState.FINISH;
-            }
-        } else if (gameState == GameState.FINISH) {
-            if (!ships.getPlayer().isAlive() || ships.numAlive() <= 1) {
-                gameState = GameState.AFTER;
-            }
-        }
+//        if (gameState == GameState.PLAY) {
+//            if (!ships.getPlayer().isActive()) {
+//                gameState = GameState.FINISH;
+//                SoundEffect s = assets.getEntry("over", SoundEffect.class);
+//
+//                /** Manager used to cut down on the audio conflicts */
+//                SoundEffectManager sounds = SoundEffectManager.getInstance();
+//                sounds.play("over", s);
+//
+//            } else if (ships.numActive() <= 1) {
+//                gameState = GameState.FINISH;
+//            }
+//        } else if (gameState == GameState.FINISH) {
+//            if (!ships.getPlayer().isAlive() || ships.numAlive() <= 1) {
+//                gameState = GameState.AFTER;
+//            }
+//        }
     }
 
     /**
@@ -187,7 +186,7 @@ public class GameScene implements Screen {
 
         if (session != null) {
             ShipList ships = session.getShips();
-            pipeline.setTarget( ships.getPlayer().getX(), ships.getPlayer().getY() );
+            pipeline.setTarget( session.getPlayer().getPlayerHead().getX(), session.getPlayer().getPlayerHead().getY() );
         }
         pipeline.render(MESSG_LOAD);
 
@@ -209,11 +208,11 @@ public class GameScene implements Screen {
                 break;
             case FINISH:
             case AFTER:
-                if (!ships.getPlayer().isActive()) {
-                    message = strings.getString("lost")+"\n"+strings.getString("restart");
-                } else {
-                    message = strings.getString("won")+"\n"+strings.getString("restart");
-                }
+//                if (!ships.getPlayer().isActive()) {
+//                    message = strings.getString("lost")+"\n"+strings.getString("restart");
+//                } else {
+//                    message = strings.getString("won")+"\n"+strings.getString("restart");
+//                }
                 break;
             case LOAD:
                 message = strings.getString("load")+"\n"+strings.getString("restart");
@@ -223,7 +222,7 @@ public class GameScene implements Screen {
                 break;
         }
 
-        pipeline.setTarget(ships.getPlayer().getX(), ships.getPlayer().getY());
+        pipeline.setTarget(session.getPlayer().getPlayerHead().getX(), session.getPlayer().getPlayerHead().getY());
         pipeline.render(message);
     }
 

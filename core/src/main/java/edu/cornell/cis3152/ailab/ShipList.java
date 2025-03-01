@@ -105,15 +105,6 @@ public class ShipList implements Iterable<Ship> {
 	}
 
 	/**
-	 * Returns the ship for the player
-	 *
-	 * @return the ship for the player
-	 */
-	public Ship getPlayer() {
-		return ships[0];
-	}
-
-	/**
 	 * Returns the number of ships alive at the end of an update.
 	 *
 	 * @return the number of ships alive at the end of an update.
@@ -241,7 +232,6 @@ public class ShipList implements Iterable<Ship> {
 
         // Draw the after burners
         for (Ship s : this) {
-
             Material m = fireModel.getModel().getSurface( 0 ).getMaterial();
             m.getDiffuseTint().a = generateNoise(time % 1.0f)*Math.min(1, s.getVelocity().len2());
 
