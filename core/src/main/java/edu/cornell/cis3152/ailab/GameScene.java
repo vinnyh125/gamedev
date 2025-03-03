@@ -19,6 +19,7 @@ package edu.cornell.cis3152.ailab;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.*;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeType.Bitmap;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.audio.SoundEffectManager;
@@ -198,6 +199,10 @@ public class GameScene implements Screen {
     public void drawGame() {
 
         pipeline.setEyePan(1.0f);
+
+        // Specify what the camera should be centered on (in this case, the head ship)
+        pipeline.setTarget(session.getPlayer().getPlayerHead().getX(), session.getPlayer().getPlayerHead().getY());
+
         ShipList ships = session.getShips();
 
         // Determine if we have a message
@@ -218,11 +223,12 @@ public class GameScene implements Screen {
                 message = strings.getString("load")+"\n"+strings.getString("restart");
                 break;
             case PLAY:
-                // No message.
+                // when the player is in PLAY mode, want this to be the message
+                message = "Coins: " + session.getPlayer().getCoins();
                 break;
         }
 
-        pipeline.setTarget(session.getPlayer().getPlayerHead().getX(), session.getPlayer().getPlayerHead().getY());
+        // actually render the message on screen
         pipeline.render(message);
     }
 
