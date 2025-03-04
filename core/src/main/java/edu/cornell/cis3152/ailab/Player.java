@@ -108,7 +108,7 @@ public class Player {
         for (Ship s : companions) {
             if (s.getId() == id) {
                 companions.remove(s);
-                s.destroy();
+                s.setShipType(Ship.SHIPTYPE.COMPANION);
                 break;
             }
         }

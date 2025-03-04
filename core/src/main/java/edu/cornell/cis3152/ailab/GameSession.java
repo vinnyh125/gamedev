@@ -24,6 +24,8 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.graphics.obj.*;
 
+import java.util.Random;
+
 /**
  * This class represents a single session of the game.
  *
@@ -48,6 +50,8 @@ public class GameSession {
     private Player player;
     /** Collection of photons on screen. (MODEL CLASS) */
     private PhotonPool photons;
+
+    public Random random;
 
     /**
      * Creates a new game session
@@ -100,6 +104,7 @@ public class GameSession {
         photonModel.setMaterial( new Material(photonImage) );
         photons.setPhotonModel( photonModel );
 
+        random = new Random();
     }
 
     /**

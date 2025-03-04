@@ -173,6 +173,9 @@ public class CollisionController {
             // If the ship is an enemy, kill the player
             if (ship.getShipType() == Ship.SHIPTYPE.ENEMY) {
                 session.getPlayer().removeCompanion(player.getId());
+                // respawn the ship somewhere else
+                player.setX(board.boardToScreen(session.random.nextInt(0, board.getWidth())));
+                player.setY(board.boardToScreen(session.random.nextInt(0, board.getHeight())));
             }
             // If the ship is a companion and has enough coins, add the companion to the chain
             else if (ship.getShipType() == Ship.SHIPTYPE.COMPANION && session.getPlayer().getCoins() >= ship.getCost()) {
