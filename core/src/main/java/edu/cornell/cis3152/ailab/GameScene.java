@@ -226,7 +226,7 @@ public class GameScene implements Screen {
                 break;
             case PLAY:
                 // when the player is in PLAY mode, want this to be the message
-                message = "Coins: " + session.getPlayer().getCoins();
+                message = "\n\n\n\n\n\n\n\n\n\n\nCoins: " + session.getPlayer().getCoins();
                 break;
         }
 
