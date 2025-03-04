@@ -139,10 +139,13 @@ public class AIController implements InputController {
         Board board = session.getBoard();
         board.clearMarks();
 
-        int targetX = session.getBoard().screenToBoard(target.getX());
-        int targetY = session.getBoard().screenToBoard(target.getY());
-        if (board.isSafeAt(targetX, targetY)) {
-            board.setGoal(targetX, targetY);
+        if (session.getPlayer().isAlive()) {
+            target = session.getPlayer().getPlayerHead();
+            int targetX = session.getBoard().screenToBoard(target.getX());
+            int targetY = session.getBoard().screenToBoard(target.getY());
+            if (board.isSafeAt(targetX, targetY)) {
+                board.setGoal(targetX, targetY);
+            }
         }
     }
 
