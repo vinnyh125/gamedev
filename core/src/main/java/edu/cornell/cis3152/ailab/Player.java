@@ -5,27 +5,39 @@ import java.util.List;
 
 public class Player {
     private class CircularBuffer {
-        private final int[] buffer;
+        private class PositionAndDirection {
+            protected float x;
+            protected float y;
+            protected int dir;
+
+            public PositionAndDirection(float x, float y, int dir) {
+                this.x = x;
+                this.y = y;
+                this.dir = dir;
+            }
+        }
+
+        private final PositionAndDirection[] buffer;
         private final int capacity;
         private int head;
         private int size;
 
         public CircularBuffer(int capacity) {
             this.capacity = capacity;
-            this.buffer = new int[capacity];
+            this.buffer = new PositionAndDirection[capacity];
             this.head = -1;
             this.size = 0;
         }
 
-        public void add(int value) {
+        public void add(float x, float y, int direction) {
             head = (head + 1) % capacity;
-            buffer[head] = value;
+            buffer[head] = new PositionAndDirection(x, y, direction);
             if (size < capacity) {
                 size++;
             }
         }
 
-        public int get(int index) {
+        public PositionAndDirection get(int index) {
             if (index < 0) {
                 throw new IndexOutOfBoundsException("Invalid index: " + index);
             }
@@ -33,7 +45,7 @@ public class Player {
             return buffer[actualIndex];
         }
 
-        public int getCompanion(int index) {
+        public PositionAndDirection getCompanion(int index) {
             return get(index * DELAY);
         }
 
@@ -85,19 +97,21 @@ public class Player {
         companions.add(ship);
         ship.setShipType(Ship.SHIPTYPE.PLAYER);
 
-        Ship tail = companions.get(companions.size() - 1);
-        ship.setX(tail.getX());
-        ship.setY(tail.getY());
+        CircularBuffer.PositionAndDirection tail = controlBuffer.getCompanion(companions.size() - 1);
+        if (tail != null) {
+            ship.setX(tail.x);
+            ship.setY(tail.y);
+        }
     }
 
     public void removeCompanion(int id) {
         for (Ship s : companions) {
             if (s.getId() == id) {
                 companions.remove(s);
-                s.setAlive(false);
+                s.destroy();
+                break;
             }
         }
-
     }
 
     public Ship getPlayerHead() {
@@ -114,12 +128,14 @@ public class Player {
     }
 
     public void update(int controlCode) {
-        controlBuffer.add(controlCode);
+        if (this.isAlive()) {
+            Ship head = this.getPlayerHead();
+            controlBuffer.add(head.getX(), head.getY(), controlCode);
+        }
 
-        // Update head
         for (int i = 0; i < companions.size(); i++) {
             Ship s = companions.get(i);
-            int followCode = controlBuffer.getCompanion(i);
+            int followCode = controlBuffer.getCompanion(i).dir;
             s.update(followCode);
         }
     }
