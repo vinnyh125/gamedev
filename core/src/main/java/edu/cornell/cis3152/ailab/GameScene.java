@@ -160,23 +160,23 @@ public class GameScene implements Screen {
 
         // if the player ship is dead, end the game with a Game Over:
         ShipList ships = session.getShips();
-//        if (gameState == GameState.PLAY) {
-//            if (!ships.getPlayer().isActive()) {
-//                gameState = GameState.FINISH;
-//                SoundEffect s = assets.getEntry("over", SoundEffect.class);
-//
-//                /** Manager used to cut down on the audio conflicts */
-//                SoundEffectManager sounds = SoundEffectManager.getInstance();
-//                sounds.play("over", s);
-//
-//            } else if (ships.numActive() <= 1) {
-//                gameState = GameState.FINISH;
-//            }
-//        } else if (gameState == GameState.FINISH) {
-//            if (!ships.getPlayer().isAlive() || ships.numAlive() <= 1) {
-//                gameState = GameState.AFTER;
-//            }
-//        }
+        if (gameState == GameState.PLAY) {
+            if (!session.getPlayer().isAlive()) {
+                gameState = GameState.FINISH;
+                SoundEffect s = assets.getEntry("over", SoundEffect.class);
+
+                /** Manager used to cut down on the audio conflicts */
+                SoundEffectManager sounds = SoundEffectManager.getInstance();
+                sounds.play("over", s);
+
+            } else if (ships.numActive() <= 1) {
+                gameState = GameState.FINISH;
+            }
+        } else if (gameState == GameState.FINISH) {
+            if (!session.getPlayer().isAlive() || ships.numAlive() <= 1) {
+                gameState = GameState.AFTER;
+            }
+        }
     }
 
     /**
@@ -201,7 +201,9 @@ public class GameScene implements Screen {
         pipeline.setEyePan(1.0f);
 
         // Specify what the camera should be centered on (in this case, the head ship)
-        pipeline.setTarget(session.getPlayer().getPlayerHead().getX(), session.getPlayer().getPlayerHead().getY());
+        if (session.getPlayer().isAlive()) {
+            pipeline.setTarget(session.getPlayer().getPlayerHead().getX(), session.getPlayer().getPlayerHead().getY());
+        }
 
         ShipList ships = session.getShips();
 
@@ -213,11 +215,11 @@ public class GameScene implements Screen {
                 break;
             case FINISH:
             case AFTER:
-//                if (!ships.getPlayer().isActive()) {
-//                    message = strings.getString("lost")+"\n"+strings.getString("restart");
-//                } else {
-//                    message = strings.getString("won")+"\n"+strings.getString("restart");
-//                }
+                if (!session.getPlayer().isAlive()) {
+                    message = strings.getString("lost")+"\n"+strings.getString("restart");
+                } else {
+                    message = strings.getString("won")+"\n"+strings.getString("restart");
+                }
                 break;
             case LOAD:
                 message = strings.getString("load")+"\n"+strings.getString("restart");
