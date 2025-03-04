@@ -135,8 +135,14 @@ public class Player {
 
         for (int i = 0; i < companions.size(); i++) {
             Ship s = companions.get(i);
-            int followCode = controlBuffer.getCompanion(i).dir;
-            s.update(followCode);
+            CircularBuffer.PositionAndDirection prev = controlBuffer.getCompanion(i);
+            s.update(prev.dir);
+
+//            System.out.println(Math.pow(s.getX() - prev.x, 2) + Math.pow(s.getY() - prev.y, 2));
+            if (Math.pow(s.getX() - prev.x, 2) + Math.pow(s.getY() - prev.y, 2) > 10) {
+                s.setX(prev.x);
+                s.setY(prev.y);
+            }
         }
     }
 }
