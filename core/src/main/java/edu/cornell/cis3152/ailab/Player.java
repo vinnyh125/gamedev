@@ -61,7 +61,7 @@ public class Player {
     /** Number of instructions to wait before following
      * Also the number of instructions stored per companion
      * */
-    private final static int DELAY = 8;
+    private final static int DELAY = 12;
     private final static int MAX_COMPANIONS = 10;
 
     /** List of the companions */
@@ -128,6 +128,15 @@ public class Player {
     }
 
     public void update(int controlCode) {
+        if (controlCode == 0) {
+            // if the head isn't moving no one moves
+            for (Ship s : companions) {
+                s.update(0);
+            }
+
+            return;
+        }
+
         if (this.isAlive()) {
             Ship head = this.getPlayerHead();
             controlBuffer.add(head.getX(), head.getY(), controlCode);
