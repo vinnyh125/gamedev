@@ -51,10 +51,6 @@ public class CollisionController {
 
     /**
      * Creates a CollisionController for the given models.
-     *
-     * @param b The game board
-     * @param s The list of ships
-     * @param p The active photons
      */
     public CollisionController(GameSession session) {
         this.session = session;
@@ -174,8 +170,8 @@ public class CollisionController {
             if (ship.getShipType() == Ship.SHIPTYPE.ENEMY) {
                 session.getPlayer().removeCompanion(player.getId());
                 // respawn the ship somewhere else
-                player.setX(board.boardToScreen(session.random.nextInt(0, board.getWidth())));
-                player.setY(board.boardToScreen(session.random.nextInt(0, board.getHeight())));
+                player.setX(board.boardToScreen(session.random.nextInt(board.getWidth())));
+                player.setY(board.boardToScreen(session.random.nextInt(board.getHeight())));
             }
             // If the ship is a companion and has enough coins, add the companion to the chain
             else if (ship.getShipType() == Ship.SHIPTYPE.COMPANION && session.getPlayer().getCoins() >= ship.getCost()) {
